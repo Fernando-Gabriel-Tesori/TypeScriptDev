@@ -1,5 +1,10 @@
 import Fastify from "fastify";
+import routes from "./routes"; 
 
-const app = Fastify()
+const app = Fastify({
+  logger: true
+});
 
-export default app
+app.register(routes); 
+
+export default app;
