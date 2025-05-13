@@ -1,14 +1,22 @@
 import dotenv from "dotenv";
 import app from "./app";
+
+// Carrega variáveis do .env
 dotenv.config();
 
-const PORT = Number(process.env.PORT);
+// Porta padrão ou fallback
+const PORT = Number(process.env.PORT) || 3333;
 
+/**
+ * Inicializa o servidor Fastify
+ */
 const startServer = async () => {
   try {
-    await app.listen({ port: PORT }).then(() => console.log(`Servidor rodando na porta ${PORT}`));
+    await app.listen({ port: PORT, host: "0.0.0.0" });
+    console.log(`🚀 Servidor rodando em: http://localhost:${PORT}`);
   } catch (err) {
-    console.error(err);
+    console.error("❌ Erro ao iniciar o servidor:", err);
+    process.exit(1);
   }
 };
 
