@@ -34,7 +34,7 @@ pids/
 logs/
 *.pid
 *.seed
-
+.env
 # TypeScript
 *.tsbuildinfo
 
