@@ -10,6 +10,6 @@ const app: FastifyInstance = Fastify({
 });
 
 // Registro das rotas definidas em src/routes/index.ts
-app.register(routes);
+app.register(routes, { prefix: "/api" });
 
 export default app;
