@@ -1,8 +1,8 @@
-import { PrismaClient, TransactionType, type category } from "@prisma/client"; // Importando o PrismaClient e os modelos gerados
+import { type Category, PrismaClient, TransactionType } from "@prisma/client"; // Importando o PrismaClient e os modelos gerados
 
 const prisma = new PrismaClient(); // Instanciando o PrismaClient para interagir com o banco de dados
 
-type GlobalCategoryInput = Pick<category, "name" | "color" | "type">;
+type GlobalCategoryInput = Pick<Category, "name" | "color" | "type">;
 
 const globalCategories: GlobalCategoryInput[] = [
   // Despesas
@@ -22,8 +22,8 @@ const globalCategories: GlobalCategoryInput[] = [
   { name: "Outros", color: "#B033FF", type: TransactionType.income },
 ];
 
-export const initializeGlobalCategories = async (): Promise<category[]> => {
-  const createdCategories: category[] = [];
+export const initializeGlobalCategories = async (): Promise<Category[]> => {
+  const createdCategories: Category[] = [];
 
   for (const category of globalCategories) {
     try {
