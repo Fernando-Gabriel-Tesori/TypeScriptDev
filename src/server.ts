@@ -1,13 +1,11 @@
-import dotenv from "dotenv";
 import app from "./app";
+import { env } from "./config/env";
 import { prismaConnect } from "./config/prisma";
 import { initializeGlobalCategories } from "./services/globalCategories.service";
-
 // Carrega variáveis do .env
-dotenv.config();
 
 // Porta padrão ou fallback
-const PORT = Number(process.env.PORT) || 3333;
+const PORT = env.PORT;
 
 /**
  * Inicializa o servidor Fastify
