@@ -15,3 +15,13 @@ export const createTransactionSchema = z.object({
     errorMap: () => ({ message: "Tipo inválido" }),
   }),
 });
+
+export const getTransactionsSchema = z.object({
+  month: z.string().optional(),
+  year: z.string().optional(),
+  type: z
+    .enum([TransactionType.expense, TransactionType.income], {
+      errorMap: () => ({ message: "Tipo inválido" }),
+    })
+    .optional(),
+});
