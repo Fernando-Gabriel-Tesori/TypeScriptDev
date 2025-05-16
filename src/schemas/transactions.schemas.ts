@@ -24,4 +24,12 @@ export const getTransactionsSchema = z.object({
       errorMap: () => ({ message: "Tipo inválido" }),
     })
     .optional(),
+  categoryId: z
+    .string()
+    .refine(isValidObjectId, {
+      message: "Categoria inválida",
+    })
+    .optional(),
 });
+
+export type GetTransactionsQuery = z.infer<typeof getTransactionsSchema>;

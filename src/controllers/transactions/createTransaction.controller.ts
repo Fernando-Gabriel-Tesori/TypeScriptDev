@@ -1,30 +1,34 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
 import prisma from "../../config/prisma";
-import { createTransactionSchema } from "../../schemas/transactions.schemas";
+import {
+  type CreateTransactionBody,
+  createTransactionSchema,
+} from "../../schemas/transaction.schema";
 
-// Handler de criação de transação
-const createTransaction = async (request: FastifyRequest, reply: FastifyReply): Promise<void> => {
-  // Simulação de ID de usuário autenticado
-  const userId = "FED$%DF%RDF";
+const createTransaction = async (
+  request: FastifyRequest<{ Body: CreateTransactionBody }>,
+  reply: FastifyReply,
+): Promise<void> => {
+  //Necessário primeiro enviar o usuário
+  const userId = "Matheus";
 
   if (!userId) {
-    reply.status(401).send({ error: "Usuário não autenticado" });
+    reply.status(401).send({ error: "Unauthenticated user!" });
     return;
   }
-
-  // Validação com Zod
+  //Necessário enviar validação
   const result = createTransactionSchema.safeParse(request.body);
 
   if (!result.success) {
-    const errorMessage = result.error.errors[0]?.message || "Validação inválida";
+    const errorMessage = result.error.errors[0].message || "Invalid validation!";
+
     reply.status(400).send({ error: errorMessage });
     return;
   }
 
-  try {
-    const transaction = result.data;
+  const transaction = result.data;
 
-    // Verifica se a categoria existe e pertence ao tipo esperado
+  try {
     const category = await prisma.category.findFirst({
       where: {
         id: transaction.categoryId,
@@ -33,27 +37,24 @@ const createTransaction = async (request: FastifyRequest, reply: FastifyReply): 
     });
 
     if (!category) {
-      reply.status(400).send({ error: "Categoria inválida" });
+      reply.status(400).send({ error: "Invalid category!" });
       return;
     }
 
-    const parsedDate = new Date(transaction.date);
+    const parseDate = new Date(transaction.date);
 
     const newTransaction = await prisma.transaction.create({
       data: {
         ...transaction,
         userId,
-        date: parsedDate,
-      },
-      include: {
-        category: true,
+        date: parseDate,
       },
     });
 
     reply.status(201).send(newTransaction);
   } catch (err) {
-    console.error("Erro ao criar transação:", err);
-    reply.status(500).send({ error: "Erro interno do servidor" });
+    request.log.error("Error creating transaction!", err);
+    reply.status(500).send({ error: "Internal server error!" });
   }
 };
 
