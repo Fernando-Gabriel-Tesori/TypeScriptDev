@@ -1,15 +1,13 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
 export const prismaConnect = async () => {
   try {
     await prisma.$connect();
-    console.log("✅ Banco de dados conectado com sucesso");
+    console.log('✅ Database connected successfully!');
   } catch (err) {
-    console.error("🚨 Falha ao conectar ao banco de dados:", err);
-    process.exit(1);
+    console.error('🚨 Failed to connect to database!');
   }
 };
-
 export default prisma;

@@ -1,16 +1,16 @@
-import type { FastifyReply, FastifyRequest } from "fastify";
-import prisma from "../../config/prisma";
-import type { DeleteTransactionParams } from "../../schemas/transaction.schema";
+import type { FastifyReply, FastifyRequest } from 'fastify';
+import prisma from '../../config/prisma';
+import type { DeleteTransactionParams } from '../../schemas/transaction.schema';
 
 export const deleteTransaction = async (
   request: FastifyRequest<{ Params: DeleteTransactionParams }>,
   reply: FastifyReply,
 ): Promise<void> => {
-  const userId = "Matheus";
+  const userId = 'Matheus';
   const { id } = request.params;
 
   if (!userId) {
-    reply.status(401).send({ error: "Unauthenticated user!" });
+    reply.status(401).send({ error: 'Unauthenticated user!' });
     return;
   }
 
@@ -23,15 +23,15 @@ export const deleteTransaction = async (
     });
 
     if (!transaction) {
-      reply.status(400).send({ error: "Transaction not found!" });
+      reply.status(400).send({ error: 'Transaction not found!' });
       return;
     }
 
     await prisma.transaction.delete({ where: { id } });
-    reply.status(200).send({ message: "Transaction deleted successfully!" });
+    reply.status(200).send({ message: 'Transaction deleted successfully!' });
   } catch (err) {
     request.log.error;
-    ({ message: "Error deleting transaction", err });
-    reply.status(500).send({ error: "Internal server error!" });
+    ({ message: 'Error deleting transaction', err });
+    reply.status(500).send({ error: 'Internal server error!' });
   }
 };

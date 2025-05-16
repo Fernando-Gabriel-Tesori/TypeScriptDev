@@ -1,9 +1,9 @@
-import dayjs from "dayjs";
-import utc from "dayjs/plugin/utc";
-import type { FastifyReply, FastifyRequest } from "fastify";
-import prisma from "../../config/prisma";
-import type { GetTransactionsQuery } from "../../schemas/transaction.schema";
-import type { TransactionFilters } from "../../types/transaction.types";
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+import type { FastifyReply, FastifyRequest } from 'fastify';
+import prisma from '../../config/prisma';
+import type { GetTransactionsQuery } from '../../schemas/transaction.schema';
+import type { TransactionFilters } from '../../types/transaction.types';
 
 dayjs.extend(utc);
 
@@ -11,10 +11,10 @@ const getTransactions = async (
   request: FastifyRequest<{ Querystring: GetTransactionsQuery }>,
   reply: FastifyReply,
 ): Promise<void> => {
-  const userId = "Matheus";
+  const userId = 'Matheus';
 
   if (!userId) {
-    reply.status(401).send({ error: "Unauthenticated user!" });
+    reply.status(401).send({ error: 'Unauthenticated user!' });
     return;
   }
 
@@ -23,8 +23,11 @@ const getTransactions = async (
   const filters: TransactionFilters = { userId };
 
   if (month && year) {
-    const startDate = dayjs.utc(`${year}-${month}-01`).startOf("month").toDate();
-    const endDate = dayjs.utc(startDate).endOf("month").toDate();
+    const startDate = dayjs
+      .utc(`${year}-${month}-01`)
+      .startOf('month')
+      .toDate();
+    const endDate = dayjs.utc(startDate).endOf('month').toDate();
 
     filters.date = {
       gte: startDate,
@@ -43,7 +46,7 @@ const getTransactions = async (
     const transactions = await prisma.transaction.findMany({
       where: filters,
       orderBy: {
-        date: "desc",
+        date: 'desc',
       },
       include: {
         category: {
@@ -58,8 +61,8 @@ const getTransactions = async (
 
     reply.send(transactions);
   } catch (err) {
-    request.log.error("Error on get transactions!", err);
-    reply.status(500).send({ error: "Internal server error!" });
+    request.log.error('Error on get transactions!', err);
+    reply.status(500).send({ error: 'Internal server error!' });
   }
 };
 
