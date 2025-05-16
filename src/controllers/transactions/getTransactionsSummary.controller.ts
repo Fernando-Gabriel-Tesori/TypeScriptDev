@@ -1,11 +1,11 @@
-import { TransactionType } from '@prisma/client';
-import dayjs from 'dayjs';
-import utc from 'dayjs/plugin/utc';
-import type { FastifyReply, FastifyRequest } from 'fastify';
-import prisma from '../../config/prisma';
-import type { getTransactionsSummaryQuery } from '../../schemas/transaction.schema';
-import type { CategorySummary } from '../../types/category.types';
-import type { TransactionSummary } from '../../types/transaction.types';
+import { TransactionType } from "@prisma/client";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+import type { FastifyReply, FastifyRequest } from "fastify";
+import prisma from "../../config/prisma";
+import type { getTransactionsSummaryQuery } from "../../schemas/transaction.schema";
+import type { CategorySummary } from "../../types/category.types";
+import type { TransactionSummary } from "../../types/transaction.types";
 
 dayjs.extend(utc);
 
@@ -13,22 +13,22 @@ const getTransactionsSummary = async (
   request: FastifyRequest<{ Querystring: getTransactionsSummaryQuery }>,
   reply: FastifyReply,
 ): Promise<void> => {
-  const userId = 'Matheus';
+  const userId = "Matheus";
 
   if (!userId) {
-    reply.status(401).send({ error: 'Unauthenticated user!' });
+    reply.status(401).send({ error: "Unauthenticated user!" });
     return;
   }
 
   const { month, year } = request.query;
 
   if (!month || !year) {
-    reply.status(400).send({ error: 'Month and year are mandatory!' });
+    reply.status(400).send({ error: "Month and year are mandatory!" });
     return;
   }
 
-  const startDate = dayjs.utc(`${year}-${month}-01`).startOf('month').toDate();
-  const endDate = dayjs.utc(startDate).endOf('month').toDate();
+  const startDate = dayjs.utc(`${year}-${month}-01`).startOf("month").toDate();
+  const endDate = dayjs.utc(startDate).endOf("month").toDate();
 
   try {
     const transactions = await prisma.transaction.findMany({
@@ -40,7 +40,7 @@ const getTransactionsSummary = async (
         },
       },
       orderBy: {
-        date: 'desc',
+        date: "desc",
       },
       include: {
         category: true,
@@ -77,16 +77,14 @@ const getTransactionsSummary = async (
       expensesByCategory: Array.from(groupesExpenses.values())
         .map((entry) => ({
           ...entry,
-          percentage: Number.parseFloat(
-            ((entry.amount / totalExpenses) * 100).toFixed(2),
-          ),
+          percentage: Number.parseFloat(((entry.amount / totalExpenses) * 100).toFixed(2)),
         }))
         .sort((a, b) => b.amount - a.amount),
     };
     reply.send(summary);
   } catch (err) {
-    request.log.error('Error on get transactions!', err);
-    reply.status(500).send({ error: 'Internal server error!' });
+    request.log.error("Error on get transactions!", err);
+    reply.status(500).send({ error: "Internal server error!" });
   }
 };
 
