@@ -4,7 +4,7 @@ generator client {
 
 datasource db {
   provider = "mongodb"
-  url      = env("DATABASE_URL") // Certifique-se de que a variável de ambiente DATABASE_URL está configurada corretamente
+  url      = env("DATABASE_URL")
 }
 
 enum TransactionType {
@@ -13,17 +13,16 @@ enum TransactionType {
 }
 
 model Category {
-  id        String          @id @default(auto()) @map("_id") @db.ObjectId
-  name      String
-  color     String
-  type      TransactionType
-  createdAt DateTime        @default(now())
-  updatedAt DateTime        @updatedAt
-
+  id           String          @id @default(auto()) @map("_id") @db.ObjectId
+  name         String
+  color        String
+  type         TransactionType
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
   transactions Transaction[]
 
   @@unique([name, type])
-  @@map("category") // Nome da coleção no MongoDB
+  @@map("category")
 }
 
 model Transaction {
@@ -35,9 +34,8 @@ model Transaction {
   userId      String
   createdAt   DateTime        @default(now())
   updatedAt   DateTime        @updatedAt
-
-  category   Category? @relation(fields: [categoryId], references: [id])
-  categoryId String?   @db.ObjectId
+  category    Category?       @relation(fields: [categoryId], references: [id])
+  categoryId  String?         @db.ObjectId
 
   @@index([userId, date])
   @@index([userId, date, categoryId])
