@@ -1,17 +1,32 @@
-import type { FastifyReply, FastifyRequest } from 'fastify';
-import prisma from '../config/prisma';
+// src/controllers/categoryController.ts
+import type { FastifyReply, FastifyRequest } from "fastify";
+import prisma from "../config/prisma";
+
+type Category = {
+  id: string;
+  name: string;
+};
 
 export const getCategories = async (
   request: FastifyRequest,
   reply: FastifyReply,
 ): Promise<void> => {
   try {
-    const categories = await prisma.category.findMany({
-      orderBy: { name: 'asc' },
+    const categories: Category[] = await prisma.category.findMany({
+      orderBy: { name: "asc" },
     });
-    reply.send(categories);
+
+    return reply.status(200).send({
+      success: true,
+      data: categories,
+    });
   } catch (err) {
-    request.log.error('Error when searching categories!', err);
-    reply.status(500).send({ message: 'Error when searching categories!' });
+    request.log.error("Error when searching categories!", err);
+
+    return reply.status(500).send({
+      success: false,
+      message: "Internal server error while fetching categories",
+      error: process.env.NODE_ENV === "development" ? err : undefined,
+    });
   }
 };

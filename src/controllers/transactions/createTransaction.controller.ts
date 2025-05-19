@@ -1,30 +1,19 @@
-import type { FastifyReply, FastifyRequest } from 'fastify';
-import prisma from '../../config/prisma';
-import {
-  type CreateTransactionBody,
-  createTransactionSchema,
-} from '../../schemas/transaction.schema';
+import { FastifyReply, FastifyRequest } from "fastify";
+import prisma from "../../config/prisma";
+import { CreateTransactionBody, createTransactionSchema } from "../../schemas/transaction.schema";
 
 const createTransaction = async (
   request: FastifyRequest<{ Body: CreateTransactionBody }>,
   reply: FastifyReply,
 ): Promise<void> => {
-  //Necessário primeiro enviar o usuário
-  const userId = 'Matheus';
+  const userId = "Matheus";
 
-  if (!userId) {
-    reply.status(401).send({ error: 'Unauthenticated user!' });
-    return;
-  }
-  //Necessário enviar validação
   const result = createTransactionSchema.safeParse(request.body);
 
   if (!result.success) {
-    const errorMessage =
-      result.error.errors[0].message || 'Invalid validation!';
-
-    reply.status(400).send({ error: errorMessage });
-    return;
+    return reply.status(400).send({
+      error: result.error.errors[0].message || "Invalid validation!",
+    });
   }
 
   const transaction = result.data;
@@ -38,24 +27,21 @@ const createTransaction = async (
     });
 
     if (!category) {
-      reply.status(400).send({ error: 'Invalid category!' });
-      return;
+      return reply.status(400).send({ error: "Invalid category!" });
     }
-
-    const parseDate = new Date(transaction.date);
 
     const newTransaction = await prisma.transaction.create({
       data: {
         ...transaction,
         userId,
-        date: parseDate,
+        date: new Date(transaction.date),
       },
     });
 
     reply.status(201).send(newTransaction);
   } catch (err) {
-    request.log.error('Error creating transaction!', err);
-    reply.status(500).send({ error: 'Internal server error!' });
+    request.log.error("Error creating transaction!", err);
+    reply.status(500).send({ error: "Internal server error!" });
   }
 };
 
